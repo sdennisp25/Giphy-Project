@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>GIPHY</title>
+</head>
+
+
+
+<body>
+
+
+	<div class="container">
+		<div id="movies-view"></div>
+		<div id="buttons-view"></div>
+
+		<form id="giphy-form">
+			<label>Add your meme</label>
+			<input id="giphy-input" type="text">
+			<button id="add-giphy" type="submit" value="add">add</button>
+		</form>
+	
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script type="text/javascript">
+		
+			var giphyContainer = [];
+
+			var queryURL = "https://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC";
+			
+			$.ajax({
+				url: queryURL,
+				method: "GET"
+			}).then(function(response) {
+				console.log(response);
+				var gif = response.data;
+				for (var i = 0; i < gif.length; i++) {
+					$("#movies-view").append("<img src='" + gif[i].images.original.url + "' style='height: 350px; width: 350px;'/>");
+
+				}
+			});
+
+
+			$.ajax({
+				url: queryURL,
+				method: "GET"
+			}).then(function(response) {
+				// $("#movies-view").text(JSON.stringify(response));
+			});
+
+
+
+
+		</script>	
+	</div>
+</body>
+</html>
