@@ -14,21 +14,32 @@
 
 
 	<div class="container">
-		<div id="movies-view"></div>
 		<div id="buttons-view"></div>
+
+		<br>
 
 		<form id="giphy-form">
 			<label>Add your meme</label>
 			<input id="giphy-input" type="text">
-			<button id="add-giphy" type="submit" value="add">add</button>
-		</form>
+			<input id="add-giphy" type="submit" value="add">
+		</form> 
+		
+		<br>
+
+		<div id="giphy-view"></div>
+
 	
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script type="text/javascript">
+		var giphyContainer = [];
 		
-			var giphyContainer = [];
 
-			var queryURL = "https://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC";
+		function displayGiphy() {
+			var giphy = $(this).attr("data-name");
+			var key = "fvnKnRa6RWrXg3jC8xiDFil6oMOzSGKB";
+			var limit = "&limit= " + 10;
+			var q = $("#giphy-input").val().trim();
+			var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + q + "&api_key=" + key + limit;
 			
 			$.ajax({
 				url: queryURL,
@@ -37,21 +48,42 @@
 				console.log(response);
 				var gif = response.data;
 				for (var i = 0; i < gif.length; i++) {
-					$("#movies-view").append("<img src='" + gif[i].images.original.url + "' style='height: 350px; width: 350px;'/>");
+					
+					var ratings = gif[i].rating;
+					var pRatings = $("<h2>").text("Ratings: " + ratings);
+					$("#giphy-view").append(pRatings);
+
+					var images = gif[i].images.original.url;
+					$("#giphy-view").append("<img src='" + images + "' style='height: 250px; width: 250px;'/>");
 
 				}
 			});
 
+		}
 
-			$.ajax({
-				url: queryURL,
-				method: "GET"
-			}).then(function(response) {
-				// $("#movies-view").text(JSON.stringify(response));
+
+			function renderButtons() {
+			$("#buttons-view").empty();
+			for (var i = 0; i < giphyContainer.length; i++) {
+				var a = $("<button>");
+				a.addClass("giphy");
+				a.attr("data-name", giphyContainer[i]);
+				a.text(giphyContainer[i]);
+				$("#buttons-view").append(a);
+				}
+			}
+
+			$("#add-giphy").on("click", function(event) {
+				event.preventDefault();
+
+				var giphy = $("#giphy-input").val().trim();
+				giphyContainer.push(giphy);
+
+				renderButtons();
 			});
+      $(document).on("click", ".giphy", displayGiphy);
 
-
-
+			renderButtons();
 
 		</script>	
 	</div>
