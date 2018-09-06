@@ -11,7 +11,44 @@
 
 
 <body>
+<style>
 
+
+h2 { 
+	width: 250px;
+	margin: 0;
+}
+
+#buttons-view {
+	box-sizing: border-box;
+	width: 100%;
+	height: 50px;
+	padding: 10px;
+	border: 2px solid black;
+	background-color: lightblue;
+}
+
+#giphy-view {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 10px;
+	border: 2px solid black;
+	background-color: lightblue;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+}
+
+#giphy-input {
+	text-align: center;
+}
+
+img {
+	width: 250px;
+	height: 250px;
+}
+
+</style>
 
 	<div class="container">
 		<div id="buttons-view"></div>
@@ -26,54 +63,79 @@
 		
 		<br>
 
-		<div id="giphy-view"></div>
+			<div id="giphy-view"></div>
 
 	
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script type="text/javascript">
-		var giphyContainer = [];
+
+		var giphyContainer = ["pikachu", "squirtle", "charmander"];
 		
+			function displayGiphy() {
+				var q = $(this).attr("data-name");
+				var key = "fvnKnRa6RWrXg3jC8xiDFil6oMOzSGKB";
+				var limit = "&limit= " + 10;
+				var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + q + "&api_key=" + key + limit;
+				
+				$.ajax({
+					url: queryURL,
+					method: "GET"
+				}).then(function(response) {
+					console.log(response);
+					var gif = response.data;
+					for (var i = 0; i < gif.length; i++) {
+						
+						var gifDiv = $("<div>");
 
-		function displayGiphy() {
-			var giphy = $(this).attr("data-name");
-			var key = "fvnKnRa6RWrXg3jC8xiDFil6oMOzSGKB";
-			var limit = "&limit= " + 10;
-			var q = $("#giphy-input").val().trim();
-			var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + q + "&api_key=" + key + limit;
-			
-			$.ajax({
-				url: queryURL,
-				method: "GET"
-			}).then(function(response) {
-				console.log(response);
-				var gif = response.data;
-				for (var i = 0; i < gif.length; i++) {
-					
-					var ratings = gif[i].rating;
-					var pRatings = $("<h2>").text("Ratings: " + ratings);
-					$("#giphy-view").append(pRatings);
+						var ratings = gif[i].rating;
+						var pRatings = $("<h2>").text("Ratings: " + ratings);
+						
+						var animateURL = gif[i].images.original.url;
+						var stillURL = gif[i].images.fixed_height_still.url;
 
-					var images = gif[i].images.original.url;
-					$("#giphy-view").append("<img src='" + images + "' style='height: 250px; width: 250px;'/>");
+						var images = $("<img class='gif'>");
+						images.attr("src", animateURL);
 
-				}
+						gifDiv.append(pRatings, images);
+						$("#giphy-view").append(gifDiv);
+						
+
+
+					}
+				});
+
+			}
+
+			$(".gif").on("click", function() {
+				var state = $(this).attr("data-state");
+
+				if (state === "still") {
+					$(this).attr("src", $(this).attr("data-animate"));
+					$(this).attr("data-state", "animate");
+				} 
+				else {
+					$(this).attr("src", $(this).attr("data-still"));
+					$(this).attr("data-state", "still");
+      	}
 			});
-
-		}
 
 
 			function renderButtons() {
+
 			$("#buttons-view").empty();
+
 			for (var i = 0; i < giphyContainer.length; i++) {
-				var a = $("<button>");
-				a.addClass("giphy");
-				a.attr("data-name", giphyContainer[i]);
-				a.text(giphyContainer[i]);
-				$("#buttons-view").append(a);
+				var button = $("<button>");
+				button.addClass("giphy");
+				button.attr("data-name", giphyContainer[i]);
+				button.text(giphyContainer[i]);
+				$("#buttons-view").append(button);
+				console.log(giphyContainer[i]);
 				}
 			}
 
 			$("#add-giphy").on("click", function(event) {
+
 				event.preventDefault();
 
 				var giphy = $("#giphy-input").val().trim();
